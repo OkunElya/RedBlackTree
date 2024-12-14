@@ -4,7 +4,7 @@
 enum Color { red, black };
 
 class RedBlackTree {
- 
+        
 
     struct dataStruct {//in this case struct stores phoneNumber
         unsigned int number;
@@ -39,6 +39,7 @@ class RedBlackTree {
         }
 
     };
+       
 
     struct node {
         struct node* left;
@@ -46,7 +47,7 @@ class RedBlackTree {
         struct node* parent;
         struct dataStruct data;
         enum Color;
-
+       
     };
 
     struct node* parent=nullptr;
@@ -79,3 +80,4 @@ int main()
 {
     RedBlackTree tree;
 }
+
