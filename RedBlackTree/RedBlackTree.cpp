@@ -1,44 +1,45 @@
-
+﻿
 #include <iostream>
 #include"linkedList.h"
 enum Color { red, black };
+struct dataStruct {//in this case struct stores phoneNumber
+    unsigned int number;
+    int countryCode;
+
+    //operators for ease of use
+    inline bool operator==(const dataStruct& other) const
+    {
+        return (this->countryCode == other.countryCode) && (this->number == other.number);
+    }
+
+    inline bool operator>(const dataStruct& other) const
+    {
+        return ((this->countryCode == other.countryCode) && (this->number > other.number))
+            || (this->countryCode > other.countryCode);
+    }
+
+    inline bool operator<=(const dataStruct& other) const
+    {
+        return !this->operator>(other);
+    }
+
+    inline bool operator<(const dataStruct& other) const
+    {
+        return ((this->countryCode < other.countryCode) && (this->number < other.number)) ||
+            (this->countryCode > other.countryCode);;
+    }
+
+    inline bool operator>=(const dataStruct& other) const
+    {
+        return !this->operator>(other);
+    }
+
+};
 
 class RedBlackTree {
  
 
-    struct dataStruct {//in this case struct stores phoneNumber
-        unsigned int number;
-        int countryCode;
-
-        //operators for ease of use
-        inline bool operator==(const dataStruct& other) const
-        {
-            return (this->countryCode == other.countryCode) && (this->number == other.number);
-        }
-
-        inline bool operator>(const dataStruct& other) const
-        {
-            return ((this->countryCode == other.countryCode) && (this->number > other.number))
-                || (this->countryCode > other.countryCode);
-        }
-
-        inline bool operator<=(const dataStruct& other) const
-        {
-            return !this->operator>(other);
-        }
-
-        inline bool operator<(const dataStruct& other) const
-        {
-            return ((this->countryCode < other.countryCode) && (this->number < other.number)) ||
-                (this->countryCode > other.countryCode);;
-        }
-
-        inline bool operator>=(const dataStruct& other) const
-        {
-            return !this->operator>(other);
-        }
-
-    };
+    
 
     struct node {
         struct node* left=nullptr;
@@ -76,7 +77,7 @@ class RedBlackTree {
             return;  // Cannot rotate if node is null or has no right child
         }
         //parent handling
-        inline node* newParent = toRot->right;//better readability
+        node* newParent = toRot->right;//better readability
         if (toRot->parent) {
             if (toRot->parent->left == toRot) {
                 toRot->parent->left = newParent; //because after the left turn the right node will be tha parent of the left    
@@ -92,10 +93,9 @@ class RedBlackTree {
             newParent->parent = nullptr;
         }
 
-        //the roataion part itself
+        //the rotation part itself
         node* buf = newParent->left;//the one that'll be unassigned, so wee need to remember it
-        newParent->left = toRot;//make rot a left child of it's right node
-        
+        newParent->left = toRot;//make rot a left child of it's right node 
         toRot->parent = newParent;//make node of the right of the rot it's parent
         newParent = buf;
         if (buf) {
@@ -108,7 +108,7 @@ class RedBlackTree {
             return;  // Cannot rotate if node is null or has no right child
         }
         //parent handling
-        inline node* newParent = toRot->left;//better readability
+        node* newParent = toRot->left;//better readability
         if (toRot->parent) {
             if (toRot->parent->left == toRot) {
                 toRot->parent->left = newParent; //because after the right turn the left node will be tha parent of the left    
@@ -124,23 +124,39 @@ class RedBlackTree {
             newParent->parent = nullptr;
         }
 
-        //the roataion part itself
+        //the rotation part itself
         node* buf = newParent->right;//the one that'll be unassigned, so wee need to remember it
-        newParent->right = toRot;//make rot a left child of it's right node
-
-        toRot->parent = newParent;//make node of the right of the rot it's parent
+        newParent->right = toRot;//make rot a right child of it's left node
+        toRot->parent = newParent;//make node of the left of the rot it's parent
         newParent = buf;
         if (buf) {
             buf->parent = toRot;
         }
     }
+    void print(const std::string& prefix, const node* node_, bool isLeft)
+    {
+        if (node_ != nullptr)
+        {
+            std::cout << prefix;
 
+            std::cout << (isLeft ? "|--" : "+--");
+
+            // print the value of the node
+
+            std::cout << ((node_->color == red) ? "\x1b[31m" : "") << node_->data.number << ((node_->color == red) ? "\x1b[0m" : "") << "\n";//causes warnings, have to ignore
+
+            // enter the next tree level - left and right branch
+            print(prefix + (isLeft ? "|   " : "    "), node_->left, true);
+            print(prefix + (isLeft ? "|   " : "    "), node_->right, false);
+        }
+    }
     struct node* root=nullptr;
-    void add(dataStruct item) {
+    public:
+        
+    void insert(dataStruct item) {
         //first do simple binary tree insertion
         node* toInsert = new node;
         toInsert->data = item;
-
 
         struct node* temp = root;
         if (!root) {
@@ -174,7 +190,7 @@ class RedBlackTree {
             }
         }
 		//we-re standing on a new child node and it's color is red
-    
+        
     
     }
 
@@ -198,9 +214,34 @@ class RedBlackTree {
         }
         return false;
     }
+    void print()
+    {
+        print("", root, false);
+    }
+    
 };
 
 int main()
 {
     RedBlackTree tree;
+    struct dataStruct  testStruct;
+    testStruct.countryCode = 7;
+    testStruct.number = 7;
+
+    tree.insert(testStruct);
+    testStruct.number = 9;
+    tree.insert(testStruct);
+    
+    testStruct.number = 5;
+    tree.insert(testStruct);
+    tree.print();
+    std::cout << "inserted 6" << std::endl;
+    testStruct.number = 6;
+    tree.insert(testStruct);
+    tree.print();
+    std::cout << "inserted 8" << std::endl;
+    testStruct.number = 8;
+    tree.insert(testStruct);
+    tree.print();
+
 }
