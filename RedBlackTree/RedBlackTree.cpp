@@ -1,5 +1,6 @@
 ﻿
 #include <iostream>
+#include <stdlib.h>
 #include"linkedList.h"
 enum Color { red, black };
 struct dataStruct {//in this case struct stores phoneNumber
@@ -37,10 +38,7 @@ struct dataStruct {//in this case struct stores phoneNumber
 };
 
 class RedBlackTree {
- 
-
-    
-
+public:
     struct node {
         struct node* left=nullptr;
         struct node* right=nullptr;
@@ -71,6 +69,14 @@ class RedBlackTree {
         }
     };
 
+    struct node* root = nullptr;
+
+    Color color(node* node_) {
+        if (node_ == nullptr)
+            return black;
+        return node_->color;
+    }
+    
 	void rotateLeft(node* toRot) {
         if (!toRot || !toRot->right) {//sanity check
             std::cerr << "Rotating node that shouldn't be rotated\n";
@@ -94,14 +100,15 @@ class RedBlackTree {
         }
 
         //the rotation part itself
-        node* buf = newParent->left;//the one that'll be unassigned, so wee need to remember it
+        node* buf = newParent->left;//the one that'll be unassigned, so we need to remember it
         newParent->left = toRot;//make rot a left child of it's right node 
         toRot->parent = newParent;//make node of the right of the rot it's parent
-        newParent = buf;
+        toRot->right = buf;
         if (buf) {
             buf->parent = toRot;
         }
 	}
+    
     void rotateRight(node* toRot) {
         if (!toRot || !toRot->left) {//sanity check
             std::cerr << "Rotating node that shouldn't be rotated\n";
@@ -125,34 +132,40 @@ class RedBlackTree {
         }
 
         //the rotation part itself
-        node* buf = newParent->right;//the one that'll be unassigned, so wee need to remember it
+        node* buf = newParent->right;//the one that'll be unassigned, so we need to remember it
         newParent->right = toRot;//make rot a right child of it's left node
         toRot->parent = newParent;//make node of the left of the rot it's parent
-        newParent = buf;
+        toRot->left = buf;
         if (buf) {
             buf->parent = toRot;
         }
     }
-    void print(const std::string& prefix, const node* node_, bool isLeft)
-    {
-        if (node_ != nullptr)
-        {
-            std::cout << prefix;
-
-            std::cout << (isLeft ? "|--" : "+--");
-
-            // print the value of the node
-
-            std::cout << ((node_->color == red) ? "\x1b[31m" : "") << node_->data.number << ((node_->color == red) ? "\x1b[0m" : "") << "\n";//causes warnings, have to ignore
-
-            // enter the next tree level - left and right branch
-            print(prefix + (isLeft ? "|   " : "    "), node_->left, true);
-            print(prefix + (isLeft ? "|   " : "    "), node_->right, false);
+    
+    void print(node* current, std::string prefix = "", bool isLeft = false, int level = 0) {
+        if (!current) {
+            return;//recursion end
         }
-    }
-    struct node* root=nullptr;
-    public:
+
+        print(current->right, prefix + (isLeft ? "|   " : "    "), false, level + 1);
+
+        std::cout << prefix;
+        std::cout << (isLeft ? "`-- " : ",-- ");
+
+        std::cout << "[" << ((current->color == red) ? "\x1b[31m" : "") << current->data.number << ((current->color == red) ? "\x1b[0m" : "") ;
         
+
+        if (current->parent) {
+            std::cout << ":" << current->parent->data.number;
+        }
+        else {
+            std::cout << ":NPR";
+        }
+        std::cout << "]" << std::endl;
+
+        print(current->left, prefix + (isLeft ? "    " : "|   "), true, level + 1);
+    }
+    
+public:
     void insert(dataStruct item) {
         //first do simple binary tree insertion
         node* toInsert = new node;
@@ -161,22 +174,12 @@ class RedBlackTree {
         struct node* temp = root;
         if (!root) {
             root = toInsert;
+            temp = toInsert;
         }
         else {
             while (temp) {
                 if (item > temp->data) {
-                    if (!temp->left)//
-                    {
-                        toInsert->parent = temp;
-                        temp->left = toInsert;
-                        temp = toInsert;//go to the new node
-                        break;
-                    }
-                    else
-                        temp = temp->left;
-                }
-                else {
-                    if (!temp->right)//nullptrCheck    
+                    if (!temp->right)//
                     {
                         toInsert->parent = temp;
                         temp->right = toInsert;
@@ -186,12 +189,62 @@ class RedBlackTree {
                     else
                         temp = temp->right;
                 }
-
+                else {
+                    if (!temp->left)//nullptrCheck    
+                    {
+                        toInsert->parent = temp;
+                        temp->left = toInsert;
+                        temp = toInsert;//go to the new node
+                        break;
+                    }
+                    else
+                        temp = temp->left;
+                }
             }
         }
 		//we-re standing on a new child node and it's color is red
-        
-    
+        while ((temp != root) && (color(temp->parent) == red)) {
+            if (!temp->gran()) {
+                break;//if there's no grandparent than we can't determine on which side of it is our node is based
+            }       
+            if (temp->parent == temp->gran()->left) {
+                node* uncle = temp->gran()->right;
+                if (color(uncle) == red) {//case 2
+                    temp->parent->color = black;
+                    uncle->color = black;
+                    temp->gran()->color = red;
+                    temp = temp->gran();
+                }
+                else {
+                    if (temp == temp->parent->right) {//fixing change of direction before insertion (case 4)
+                        temp = temp->parent;
+                        this->rotateLeft(temp);
+                    }
+                    temp->parent->color = black;//case 3
+                    temp->gran()->color = red;
+                    this->rotateRight(temp->gran());
+                } 
+            }
+            else {
+                node* uncle = temp->gran()->left;
+                if (color(uncle) == red) {//case 2
+                    temp->parent->color = black;
+                    uncle->color = black;
+                    temp->gran()->color = red;
+                    temp = temp->gran();
+                }
+                else {
+                    if (temp == temp->parent->left) {//case 4 
+                        temp = temp->parent;
+                        this->rotateRight(temp);
+                    }
+                    temp->parent->color = black;//case 3
+                    temp->gran()->color = red;
+                    this->rotateLeft(temp->gran());
+                }
+            }
+        }
+        root->color = black;//case 1
     }
 
     bool find(dataStruct value) {
@@ -214,10 +267,6 @@ class RedBlackTree {
         }
         return false;
     }
-    void print()
-    {
-        print("", root, false);
-    }
     
 };
 
@@ -225,23 +274,13 @@ int main()
 {
     RedBlackTree tree;
     struct dataStruct  testStruct;
-    testStruct.countryCode = 7;
-    testStruct.number = 7;
+    testStruct.countryCode = 11;
+    for (int i = 0; i < 12; i++) {
+        testStruct.number = (int)(std::rand())%100;
+        std::cout << "inserting " << testStruct.number << " ";
+        tree.insert(testStruct);
+    }
 
-    tree.insert(testStruct);
-    testStruct.number = 9;
-    tree.insert(testStruct);
-    
-    testStruct.number = 5;
-    tree.insert(testStruct);
-    tree.print();
-    std::cout << "inserted 6" << std::endl;
-    testStruct.number = 6;
-    tree.insert(testStruct);
-    tree.print();
-    std::cout << "inserted 8" << std::endl;
-    testStruct.number = 8;
-    tree.insert(testStruct);
-    tree.print();
-
+    std::cout << "\n";
+    tree.print(tree.root);
 }
