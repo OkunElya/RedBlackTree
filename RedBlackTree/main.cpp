@@ -1,28 +1,47 @@
 #include <iostream>
 #include <stdlib.h>
-#include"linkedList.h"
-#include"redBlackTree.h"
+#include <algorithm>
+#include <random>
+#include "linkedList.h"
+#include "redBlackTree.h"
 
 int main()
 {
-	data_structures::CircularDoubleLinkedList<int> list();
-	data_structures::RedBlackTree tree;
+    std::random_device rd;
+    std::mt19937 g(rd());
+    data_structures::CircularDoubleLinkedList<int> list();
+    data_structures::RedBlackTree tree;
+    for (int tries = 0; tries < 1000; tries++) {
+        struct data_structures::dataStruct testStruct;
+        int added[1200];
+        for (int i = 0; i < 1200; i++) {
+            added[i] = i;
+        }
+        std::shuffle(std::begin(added), std::end(added), g);
+		for (int i = 0; i < 1200; i++) {
+			testStruct.number = added[i];
+			tree.insert(testStruct);
+		}
 
-	struct data_structures::dataStruct  testStruct;
-	testStruct.countryCode = 11;
-	std::cout << "inserting \n ";
-	for (int i = 0; i < 12; i++) {
-		testStruct.number = (int)(std::rand()) % 100;
-		std::cout << testStruct.number << " ";
-		tree.insert(testStruct);
-	}
-	std::cout << "\n";
-	tree.print();
-	while (!tree.isEmpty()) {
-		std::cin >> testStruct.number;
-		std::cout << "deleting " << testStruct.number << ".. ";
-		std::cout << tree.pop(testStruct) << "\n";
-		std::cout << "\n";
-		tree.print();
-	}
+        std::cout << "\n";
+
+        // Mix up elements in the added array
+        
+        std::shuffle(std::begin(added), std::end(added), g);
+
+        for (int i = 0; i < 1200; i++) {
+            testStruct.number = added[i];
+            if (!tree.pop(testStruct)) {
+                tree.print();
+				std::cout << "Failed to pop " << testStruct.number << "\n";
+            }
+            if ((tries % 100 == 0) && (i == 1000)) {
+                tree.print();
+            }
+        }
+        if (!tree.isEmpty())
+        {
+            std::cout << "Tree is not empty\n SOMETHING IS WRONG";
+        }
+    }
 }
