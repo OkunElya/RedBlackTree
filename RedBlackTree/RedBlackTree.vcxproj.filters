@@ -15,15 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RedBlackTree.cpp">
+    <ClCompile Include="redBlackTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="linkedList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="linkedList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="redBlackTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
