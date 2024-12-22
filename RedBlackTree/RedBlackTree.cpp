@@ -27,8 +27,8 @@ struct dataStruct {//in this case struct stores phoneNumber
 
 	inline bool operator<(const dataStruct& other) const
 	{
-		return ((this->countryCode < other.countryCode) && (this->number < other.number)) ||
-			(this->countryCode > other.countryCode);;
+		return ((this->countryCode == other.countryCode) && (this->number < other.number)) ||
+			(this->countryCode < other.countryCode);;
 	}
 
 	inline bool operator>=(const dataStruct& other) const
@@ -40,6 +40,7 @@ struct dataStruct {//in this case struct stores phoneNumber
 
 class RedBlackTree {
 private:
+	
 	struct node {
 		struct node* left = nullptr;
 		struct node* right = nullptr;
@@ -69,8 +70,9 @@ private:
 			return nullptr;
 		}
 	};
-
 	struct node* root = nullptr;
+
+	
 
 	Color color(node* node_) {
 		if (node_ == nullptr)
@@ -215,8 +217,8 @@ private:
 
 		}
 	}
-public:
 
+public:
 	void insert(dataStruct item) {
 		//first do simple binary tree insertion
 		node* toInsert = new node;
@@ -427,6 +429,10 @@ public:
 	void print() {
 		this->print(root);//just a wrapper to make it public
 	}
+
+	bool isEmpty() {
+		return (root == nullptr);
+	}
 };
 
 int main()
@@ -434,11 +440,20 @@ int main()
 	RedBlackTree tree;
 	struct dataStruct  testStruct;
 	testStruct.countryCode = 11;
+	std::cout << "inserting \n ";
 	for (int i = 0; i < 12; i++) {
 		testStruct.number = (int)(std::rand()) % 100;
-		std::cout << "inserting " << testStruct.number << " ";
+		std::cout<< testStruct.number << " ";
 		tree.insert(testStruct);
 	}
 	std::cout << "\n";
 	tree.print();
+	while (!tree.isEmpty()) {
+		std::cin >> testStruct.number;
+		std::cout << "deleting " << testStruct.number << ".. ";
+		std::cout<<tree.pop(testStruct) << "\n";
+		std::cout << "\n";
+		tree.print();
+	}
+	
 }
