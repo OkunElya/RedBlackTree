@@ -4,48 +4,26 @@
 #include "redBlackTree.h"
 
 namespace data_structures {
-		inline bool dataStruct::operator==(const dataStruct& other) const
-		{
-			return (this->countryCode == other.countryCode) && (this->number == other.number);
+	
+		template <typename dataPoint>
+		RedBlackTree<dataPoint>::RedBlackTree() requires isComparable<dataPoint> {
 		}
-
-		inline bool dataStruct::operator>(const dataStruct& other) const
-		{
-			return ((this->countryCode == other.countryCode) && (this->number > other.number))
-				|| (this->countryCode > other.countryCode);
+		
+		template <typename dataPoint>
+		RedBlackTree<dataPoint>::~RedBlackTree() {
+			clear();
 		}
-
-		inline bool dataStruct::operator<=(const dataStruct& other) const
-		{
-			return !this->operator>(other);
-		}
-
-		inline bool dataStruct::operator<(const dataStruct& other) const
-		{
-			return ((this->countryCode == other.countryCode) && (this->number < other.number)) ||
-				(this->countryCode < other.countryCode);
-		}
-
-		inline bool dataStruct::operator>=(const dataStruct& other) const
-		{
-			return !this->operator>(other);
-		}
-
-		RedBlackTree::RedBlackTree() {
-			
-		}
-		RedBlackTree::~RedBlackTree() {
-			RedBlackTree::clear();
-		}
-
-		RedBlackTree::node* RedBlackTree::node::gran() {
+		
+		template <typename dataPoint>
+		RedBlackTree<dataPoint>::node* RedBlackTree<dataPoint>::node::gran() {
 			if (this->parent) {
 				return this->parent->parent;
 			}
 			return nullptr;
 		}
 	
-		RedBlackTree::node* RedBlackTree::node::brother() {
+		template <typename dataPoint>
+		RedBlackTree<dataPoint>::node* RedBlackTree<dataPoint>::node::brother() {
 			if (this->parent) {
 				if (this == this->parent->left)
 					return this->parent->right;
@@ -55,20 +33,23 @@ namespace data_structures {
 			return nullptr;
 		}
 		
-		RedBlackTree::node* RedBlackTree::node::uncle() {
+		template <typename dataPoint>
+		RedBlackTree<dataPoint>::node* RedBlackTree<dataPoint>::node::uncle() {
 			if (this->parent) {
 				return this->parent->brother();
 			}
 			return nullptr;
 		}
 		
-		Color RedBlackTree::color(node* node_) {
+		template <typename dataPoint>
+		Color RedBlackTree<dataPoint>::color(node* node_) {
 			if (node_ == nullptr)
 				return black;
 			return node_->color;
 		}
-
-		void RedBlackTree::rotateLeft(node* toRot) {
+		
+		template <typename dataPoint>
+		void RedBlackTree<dataPoint>::rotateLeft(node* toRot) {
 			if (!toRot || !toRot->right) {//sanity check
 				std::cerr << "Rotating node that shouldn't be rotated\n";
 				return;  // Cannot rotate if node is null or has no right child
@@ -99,8 +80,9 @@ namespace data_structures {
 				buf->parent = toRot;
 			}
 		}
-
-		void RedBlackTree::rotateRight(node* toRot) {
+		
+		template <typename dataPoint>
+		void RedBlackTree<dataPoint>::rotateRight(node* toRot) {
 			if (!toRot || !toRot->left) {//sanity check
 				std::cerr << "Rotating node that shouldn't be rotated\n";
 				return;  // Cannot rotate if node is null or has no right child
@@ -131,8 +113,9 @@ namespace data_structures {
 				buf->parent = toRot;
 			}
 		}
-
-		void RedBlackTree::print(node* current, std::string prefix , bool isLeft , int level) {
+		
+		template <typename dataPoint>
+		void RedBlackTree<dataPoint>::print(node* current, std::string prefix , bool isLeft , int level){
 			if (!current) {
 				return;//recursion end
 			}
@@ -142,11 +125,11 @@ namespace data_structures {
 			std::cout << prefix;
 			std::cout << (isLeft ? "    " : "    ");
 
-			std::cout << "[" << ((current->color == red) ? "\x1b[31m" : "") << current->data.number << ((current->color == red) ? "\x1b[0m" : "");
+			std::cout << "[" << ((current->color == red) ? "\x1b[31m" : "") << current->data << ((current->color == red) ? "\x1b[0m" : "");
 
 
 			if (current->parent) {
-				std::cout << ":" << current->parent->data.number;
+				std::cout << ":" << current->parent->data;
 			}
 			else {
 				std::cout << ":NPR";
@@ -156,7 +139,8 @@ namespace data_structures {
 			print(current->left, prefix + (isLeft ? "    " : "    "), true, level + 1);
 		}
 
-		void RedBlackTree::deletionBalance(node * temp) {
+		template <typename dataPoint>
+		void RedBlackTree<dataPoint>::deletionBalance(node * temp) {
 			while (temp != root && color(temp) == black) {
 				if (!temp->parent) break; // safety check
 
@@ -224,7 +208,8 @@ namespace data_structures {
 			temp->color = black;
 		}
 
-		void RedBlackTree::insert(dataStruct item) {
+		template <typename dataPoint>
+		void RedBlackTree<dataPoint>::insert(dataPoint item) {
 			//first do simple binary tree insertion
 			node* toInsert = new node;
 			toInsert->data = item;
@@ -305,7 +290,8 @@ namespace data_structures {
 			root->color = black;//case 1
 		}
 
-		bool RedBlackTree::find(dataStruct value) {
+		template <typename dataPoint>
+		bool RedBlackTree<dataPoint>::find(dataPoint value) {
 			struct node* temp = root;
 
 			while (temp) {
@@ -326,7 +312,8 @@ namespace data_structures {
 			return false;
 		}
 
-		bool RedBlackTree::pop(dataStruct value) {
+		template <typename dataPoint>
+		bool RedBlackTree<dataPoint>::pop(dataPoint value) {
 			if (!root) {
 				return false;//null root protection
 			}
@@ -432,17 +419,20 @@ namespace data_structures {
 			return true;
 		}
 
-		void RedBlackTree::clear() {
+		template <typename dataPoint>
+		void RedBlackTree<dataPoint>::clear() {
 			while (root) {
 				pop(root->data);
 			}
 		}
 
-		void RedBlackTree::print() {
+		template <typename dataPoint>
+		void RedBlackTree<dataPoint>::print() {
 			this->print(root);//just a wrapper to make it public
 		}
 
-		bool RedBlackTree::isEmpty() {
+		template <typename dataPoint>
+		bool RedBlackTree<dataPoint>::isEmpty() {
 			return (root == nullptr);
 		}
 }

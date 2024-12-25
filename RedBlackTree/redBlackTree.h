@@ -2,33 +2,34 @@
 // red black tree class with insert, find ,delete functions
 
 #include <iostream>
+#include <type_traits>//for concepts usage
+#include <string>
 
 #ifndef RED_BLACK_TREE_CLASS_H
 #define RED_BLACK_TREE_CLASS_H
 
+template <typename T>
+concept isComparable = requires(T a, T b){// a concept to check if type is comparable
+	{ a > b } -> std::same_as<bool>;
+	{ a < b } -> std::same_as<bool>;
+	{ a == b } -> std::same_as<bool>;
+};
+
+
+
 namespace data_structures {
 	enum Color { red, black };
 
-	struct dataStruct {//in this case struct stores phoneNumber
-		unsigned int number;
-		int countryCode;
-		inline bool operator==(const dataStruct& other) const;
-		inline bool operator>(const dataStruct& other) const;
-		inline bool operator<=(const dataStruct& other) const;
-		inline bool operator<(const dataStruct& other) const;
-		inline bool operator>=(const dataStruct& other) const;
 
-	};
-
+	template <typename dataPoint>
 	class RedBlackTree {
-		
 	private:
-		
+
 		struct node {
 			struct node* left = nullptr;
 			struct node* right = nullptr;
 			struct node* parent = nullptr;
-			struct dataStruct data;
+			dataPoint data;
 			enum Color color = red;
 			//some 'safe' to use functions
 			node* gran(); // Returns the grandparent of the node
@@ -36,7 +37,6 @@ namespace data_structures {
 			node* uncle(); // Returns the uncle of the node
 		};
 		struct node* root = nullptr;
-
 
 
 		Color color(node* node_); // Returns the color of the node
@@ -50,13 +50,13 @@ namespace data_structures {
 		void deletionBalance(node* temp); // Balances the tree after a node deletion
 
 	public:
-		RedBlackTree();
+		RedBlackTree() requires isComparable<dataPoint>;
 		~RedBlackTree();
-		void insert(dataStruct item); // Inserts a new node with the given data
+		void insert(dataPoint item); // Inserts a new node with the given data
 
-		bool find(dataStruct value); // Finds a node with the given data
+		bool find(dataPoint value); // Finds a node with the given data
 
-		bool pop(dataStruct value); // Deletes a node with the given data
+		bool pop(dataPoint value); // Deletes a node with the given data
 
 		void clear();//removes every node in the tree
 
