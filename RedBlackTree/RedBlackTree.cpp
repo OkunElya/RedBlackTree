@@ -31,6 +31,12 @@ namespace data_structures {
 			return !this->operator>(other);
 		}
 
+		RedBlackTree::RedBlackTree() {
+			
+		}
+		RedBlackTree::~RedBlackTree() {
+			RedBlackTree::clear();
+		}
 
 		RedBlackTree::node* RedBlackTree::node::gran() {
 			if (this->parent) {
@@ -56,13 +62,11 @@ namespace data_structures {
 			return nullptr;
 		}
 		
-		
 		Color RedBlackTree::color(node* node_) {
 			if (node_ == nullptr)
 				return black;
 			return node_->color;
 		}
-
 
 		void RedBlackTree::rotateLeft(node* toRot) {
 			if (!toRot || !toRot->right) {//sanity check
@@ -133,10 +137,10 @@ namespace data_structures {
 				return;//recursion end
 			}
 
-			print(current->right, prefix + (isLeft ? "|   " : "    "), false, level + 1);
+			print(current->right, prefix + (isLeft ? "    " : "    "), false, level + 1);
 
 			std::cout << prefix;
-			std::cout << (isLeft ? "`-- " : ",-- ");
+			std::cout << (isLeft ? "    " : "    ");
 
 			std::cout << "[" << ((current->color == red) ? "\x1b[31m" : "") << current->data.number << ((current->color == red) ? "\x1b[0m" : "");
 
@@ -149,64 +153,75 @@ namespace data_structures {
 			}
 			std::cout << "]" << std::endl;
 
-			print(current->left, prefix + (isLeft ? "    " : "|   "), true, level + 1);
+			print(current->left, prefix + (isLeft ? "    " : "    "), true, level + 1);
 		}
 
-		void RedBlackTree::deletionBalance(node* temp) {
-			while (color(temp) == black) {
-				if (color(temp->brother()) == red) {
-					if (temp->brother()) {
-						temp->brother()->color = black;
-					}
-					if (temp->parent) {
-						temp->parent->color = red;
-						if (temp == temp->parent->left) {
-							rotateLeft(temp->parent);
-						}
-						else {
-							rotateRight(temp->parent);
-						}
-					}
+		void RedBlackTree::deletionBalance(node * temp) {
+			while (temp != root && color(temp) == black) {
+				if (!temp->parent) break; // safety check
 
-				}
-				if (temp->brother()) {
-					if (color(temp->brother()->left) == black && color(temp->brother()->right) == black)//if both children of the brother are black
-					{
-						temp->brother()->color = black;
-						//now go balance the parent
-						RedBlackTree::deletionBalance(temp->parent);
-						return;
+				bool isLeftChild = (temp == temp->parent->left);
+				node* brother = isLeftChild ? temp->parent->right : temp->parent->left;
+
+				//brother is red (case 1)
+				if (color(brother) == red) {
+					brother->color = black;
+					temp->parent->color = red;
+					if (isLeftChild) {
+						rotateLeft(temp->parent);
+						brother = temp->parent->right;
 					}
 					else {
-						if (temp == temp->parent->left) {
-							if (color(temp->brother()->right) == black) {
-								temp->brother()->left->color = black;
-								temp->brother()->color = red;
-								rotateRight(temp->brother());
-							}
-							temp->brother()->color = temp->parent->color;
-							temp->parent->color = black;
-							temp->brother()->right->color = black;
-							rotateLeft(temp->parent);
-							return;
-						}
-						else {
-							if (color(temp->brother()->left) == black) {
-								temp->brother()->right->color = black;
-								temp->brother()->color = red;
-								rotateLeft(temp->brother());
-							}
-							temp->brother()->color = temp->parent->color;
-							temp->parent->color = black;
-							temp->brother()->left->color = black;
-							rotateRight(temp->parent);
-							return;
-						}
+						rotateRight(temp->parent);
+						brother = temp->parent->left;
 					}
 				}
+
+				// exit if brother is null after rotation
+				if (!brother) break;
+
+				bool brotherLeftBlack = color(brother->left) == black;
+				bool brotherRightBlack = color(brother->right) == black;
+
+				// black brother with two black children (case 2)
+				if (brotherLeftBlack && brotherRightBlack) {
+					brother->color = red;
+					temp = temp->parent;
+					continue;
+				}
+
+				//black brother with one red child (case 3)
+				if (isLeftChild) {
+					if (brotherRightBlack) {
+						if (brother->left) brother->left->color = black;
+						brother->color = red;
+						rotateRight(brother);
+						brother = temp->parent->right;
+					}
+					//black brother with right red child (case 4)
+					brother->color = temp->parent->color;
+					temp->parent->color = black;
+					if (brother->right) brother->right->color = black;
+					rotateLeft(temp->parent);
+				}
+				else {
+					if (brotherLeftBlack) {
+						if (brother->right) brother->right->color = black;
+						brother->color = red;
+						rotateLeft(brother);
+						brother = temp->parent->left;
+					}
+					//black brother with left red child (case 4)
+					brother->color = temp->parent->color;
+					temp->parent->color = black;
+					if (brother->left) brother->left->color = black;
+					rotateRight(temp->parent);
+				}
+
+				temp = root;
 			}
+			// Ensure root is black
 			temp->color = black;
-			return;
 		}
 
 		void RedBlackTree::insert(dataStruct item) {
@@ -412,8 +427,15 @@ namespace data_structures {
 
 			//at this point we have the deleted node
 			// NOT IMPLEMENTED YET
-			RedBlackTree::deletionBalance(deleted->parent);//the deleted node will always have the parent or else the balancing won't be done.
+			RedBlackTree::deletionBalance(deleted);//the deleted node will always have the parent or else the balancing won't be done.
+			delete deleted;
 			return true;
+		}
+
+		void RedBlackTree::clear() {
+			while (root) {
+				pop(root->data);
+			}
 		}
 
 		void RedBlackTree::print() {

@@ -46,14 +46,14 @@ namespace data_structures {
 	
 	 template<typename T>
 	 CircularDoubleLinkedList<T>::Node* CircularDoubleLinkedList<T>::get(long unsigned int pos) {
-		 CircularDoubleLinkedList<T>::Node* toGet = head;
-		for (long unsigned int i = 0; i < pos; i++) {
-			toGet = toGet->next;
-		}
-		return toGet;
-	}
+		 Node* toGet = head;
+		 for (long unsigned int i = 0; i < pos; i++) {
+			 toGet = toGet->next;
+		 }
+		 return toGet;
+	 }
 	
-	 template<typename T>
+	template<typename T>
 	T& CircularDoubleLinkedList<T>::operator[](long unsigned int pos) {
 		return  CircularDoubleLinkedList<T>::get(pos)->data;
 	}

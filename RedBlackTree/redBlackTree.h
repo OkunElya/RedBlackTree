@@ -21,8 +21,9 @@ namespace data_structures {
 	};
 
 	class RedBlackTree {
+		
 	private:
-
+		
 		struct node {
 			struct node* left = nullptr;
 			struct node* right = nullptr;
@@ -49,11 +50,15 @@ namespace data_structures {
 		void deletionBalance(node* temp); // Balances the tree after a node deletion
 
 	public:
+		RedBlackTree();
+		~RedBlackTree();
 		void insert(dataStruct item); // Inserts a new node with the given data
 
 		bool find(dataStruct value); // Finds a node with the given data
 
 		bool pop(dataStruct value); // Deletes a node with the given data
+
+		void clear();//removes every node in the tree
 
 		void print(); // Prints the tree in a readable format
 
