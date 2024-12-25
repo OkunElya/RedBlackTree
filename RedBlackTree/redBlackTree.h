@@ -52,9 +52,11 @@ namespace data_structures {
 	public:
 		RedBlackTree() requires isComparable<dataPoint>;
 		~RedBlackTree();
-		void insert(dataPoint item); // Inserts a new node with the given data
+		dataPoint* insert(dataPoint item); // Inserts a new node with the given data
 
-		bool find(dataPoint value); // Finds a node with the given data
+		bool find(dataPoint value); // Finds a node with the given data and returns true if it exists
+		
+		dataPoint* get(dataPoint& value); // Gets a node with the given data,returns true if value is overwritten
 
 		bool pop(dataPoint value); // Deletes a node with the given data
 

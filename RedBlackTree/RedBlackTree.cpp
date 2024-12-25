@@ -128,12 +128,12 @@ namespace data_structures {
 			std::cout << "[" << ((current->color == red) ? "\x1b[31m" : "") << current->data << ((current->color == red) ? "\x1b[0m" : "");
 
 
-			if (current->parent) {
+			/*if (current->parent) { was polluting the output
 				std::cout << ":" << current->parent->data;
 			}
 			else {
 				std::cout << ":NPR";
-			}
+			}*/
 			std::cout << "]" << std::endl;
 
 			print(current->left, prefix + (isLeft ? "    " : "    "), true, level + 1);
@@ -209,7 +209,7 @@ namespace data_structures {
 		}
 
 		template <typename dataPoint>
-		void RedBlackTree<dataPoint>::insert(dataPoint item) {
+		dataPoint* RedBlackTree<dataPoint>::insert(dataPoint item) {
 			//first do simple binary tree insertion
 			node* toInsert = new node;
 			toInsert->data = item;
@@ -288,6 +288,7 @@ namespace data_structures {
 				}
 			}
 			root->color = black;//case 1
+			return &toInsert->data;
 		}
 
 		template <typename dataPoint>
@@ -295,12 +296,12 @@ namespace data_structures {
 			struct node* temp = root;
 
 			while (temp) {
-				if (value > temp->data) {
+				if (value < temp->data) {
 					if (!temp->left)//nullptrCheck
 						return false;
 					temp = temp->left;
 				}
-				else if (value < temp->data) {
+				else if (value > temp->data) {
 					if (!temp->right)//nullptrCheck
 						return false;
 					temp = temp->right;
@@ -310,6 +311,28 @@ namespace data_structures {
 				}
 			}
 			return false;
+		}
+		 
+		template <typename dataPoint>
+		dataPoint* RedBlackTree<dataPoint>::get(dataPoint& value) {
+			struct node* temp = root;
+
+			while (temp) {
+				if (value < temp->data) {
+					if (!temp->left)//nullptrCheck
+						return nullptr;
+					temp = temp->left;
+				}
+				else if (value > temp->data) {
+					if (!temp->right)//nullptrCheck
+						return nullptr;
+					temp = temp->right;
+				}
+				else {
+					return &temp->data;//found
+				}
+			}
+			return nullptr;
 		}
 
 		template <typename dataPoint>

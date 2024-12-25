@@ -26,9 +26,11 @@ namespace data_structures {
 		unsigned long int pop(unsigned int pos);//removes value by position
 		void clear();//clears the whole list,used in destructor
 		unsigned long int remove(T val);//remover by value
+		unsigned long int count();//returns count of elements
 		unsigned long int find(T val);//searches for selected value and returns found count
+		bool isEmpty();//checks if list is empty
 	protected:
-		Node* head;
+		Node* head=nullptr;
 	};
 }
 #endif

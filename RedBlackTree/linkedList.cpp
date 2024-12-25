@@ -6,7 +6,7 @@
 namespace data_structures {
 	template<typename T>
 	 CircularDoubleLinkedList<T>::CircularDoubleLinkedList() {
-		CircularDoubleLinkedList<T>::Node head = nullptr;
+		CircularDoubleLinkedList<T>::Node* head = nullptr;
 	}
 	 
 	 template<typename T>
@@ -135,7 +135,6 @@ namespace data_structures {
 			head = nullptr;
 			return 0;
 		}
-		//if node is closer to the beginning
 		for (long unsigned int i = 0; i < pos; i++) {
 			toRemove = toRemove->next;
 		}
@@ -164,8 +163,6 @@ namespace data_structures {
 			return 0;
 		}
 		do {
-			this->show();
-
 			if (current->data == val) {
 				CircularDoubleLinkedList<T>::Node* buf = current;
 				current->prev->next = current->next;
@@ -216,5 +213,24 @@ namespace data_structures {
 		} while ((head != nullptr) && (current != head));
 
 		return remNodesCount;
+	}
+
+	template<typename T>
+	unsigned long int CircularDoubleLinkedList<T>::count() {
+		unsigned long int count = 0;
+		if (head == nullptr) {
+			return 0;
+		}
+		CircularDoubleLinkedList<T>::Node* current = head;
+		do {
+			count++;
+			current = current->next;
+		} while (current != head);
+		return count;
+	}
+	
+	template<typename T>
+	bool CircularDoubleLinkedList<T>::isEmpty() {
+		return head == nullptr;
 	}
 }
