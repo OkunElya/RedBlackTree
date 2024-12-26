@@ -11,6 +11,15 @@ namespace data_structures {
 	 
 	 template<typename T>
 	 CircularDoubleLinkedList<T>::~CircularDoubleLinkedList() {
+		 //std::cout << "deleting list with head value " ;//debug
+		 //if (head != nullptr) {
+			// std::cout << head->data << std::endl;
+		 //}
+		 //else {
+			// std::cout << "nullptr" << std::endl;
+		 //}
+		 
+
 		clear();
 	}
 	

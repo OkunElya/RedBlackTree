@@ -23,7 +23,7 @@ namespace data_structures {
 
 	template <typename dataPoint>
 	class RedBlackTree {
-	private:
+	protected:
 
 		struct node {
 			struct node* left = nullptr;
@@ -37,7 +37,7 @@ namespace data_structures {
 			node* uncle(); // Returns the uncle of the node
 		};
 		struct node* root = nullptr;
-
+	private:
 
 		Color color(node* node_); // Returns the color of the node
 

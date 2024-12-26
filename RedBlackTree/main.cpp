@@ -7,6 +7,8 @@
 #include "linkedList.cpp"
 #include "redBlackTree.h"
 #include "redBlackTree.cpp"
+
+//struct for storing phone numbers (from the task) first field is country code, second is number
 struct phoneNumber {//in this case struct stores phoneNumber
 	unsigned int number = 0;
 	unsigned long int countryCode = 0;
@@ -50,48 +52,68 @@ struct phoneNumber {//in this case struct stores phoneNumber
 		return output;
 	}
 };
-
-
-std::ostream& operator<<(std::ostream& os, phoneNumber& pn) {
+//overload of << operator for phoneNumber to print it 
+static std::ostream& operator<<(std::ostream& os, phoneNumber& pn) {
 	os << pn.toString();
 	return os;
 }
+//class for storing phone numbers in a tree
+class taskTree : public data_structures::RedBlackTree<phoneNumber> {
+private:
+	void inOrderWalk(node* temp) {
+		if (!temp)
+		{
+			return;
+		}
+		inOrderWalk(temp->left);
+		std::cout << temp->data << "\n";
+		inOrderWalk(temp->right);
+
+	}
+public:
+	void taskInsert(phoneNumber& key, unsigned long int lineNumber) {
+		phoneNumber* temp = nullptr;
+		temp = get(key);
+		if (!temp) {
+			temp = insert(key);//if there is no such key
+		}
+		temp->list.insert(lineNumber);//add to list of repeated line numbers
+	}
+
+	long unsigned int taskRemove(phoneNumber& key) { //returns number of row where deleted element was
+		long unsigned int output = 0;
+		if (get(key)) {
+
+			key.list.remove(key.number);//remove from list of repeated line numbers
+			output = key.list[0];
+			key.list.pop(0);
+			if (key.list.isEmpty()) {
+				pop(key);
+			}//remove node from the tree
+
+		}
+		return output;
+	}
+	
+
+	void inOrderWalk() {
+		inOrderWalk(root);
+	}
+};
 
 int main()
 {
-	class taskTree : public data_structures::RedBlackTree<phoneNumber> {
-	public:
-		void taskInsert(phoneNumber &key,unsigned long int lineNumber) {
-			phoneNumber* temp= nullptr;
-			temp = get(key);
-			if (!temp) {
-				temp=insert(key);//if there is no such key
-			}
-			temp->list.insert(lineNumber);//add to list of repeated line numbers
-		}
-		
-		void taskRemove(phoneNumber key) {
-			if (get(key)) {
-				
-				key.list.remove(key.number);//remove from list of repeated line numbers
-				
-				if (key.list.isEmpty()) {
-					pop(key);
-				}//remove node from the tree
-				
-			}
-		}
-	};
+	
 
 	taskTree tree;
-
+	phoneNumber key;
 	std::ifstream dataFile;
 	std::string filePath;
 
 	while (true) {//load file 
 		std::cout << "Enter the file path: ";
-		//std::getline(std::cin, filePath);
-		std::string filePath = "C:\\Users\\OkunElya\\Desktop\\numbers.txt";//for debug purposes
+		std::getline(std::cin, filePath);
+		
 		std::cout << "\n";
 		std::cin.clear();
 		//check if file exists
@@ -108,8 +130,7 @@ int main()
 	unsigned long int lineCounter = 0;
 	bool isCorrect = true;
 	while (std::getline(dataFile, line))//read file line by line
-	{
-		phoneNumber key;
+	{		
         std::regex numberPattern(R"(\d{3}-\d{7})");
 		if (std::regex_match(line,numberPattern)) {
 			std::string countryCode = line.substr(0, 3);
@@ -133,9 +154,10 @@ int main()
 		std::cout << "File loaded successfully ("<<lineCounter<<" lines)\n";
 	}
 	dataFile.close();
-
+	//the tree is now loaded with data
 	
 	tree.print();
+	tree.inOrderWalk();;
 	
 	return 0;
 }

@@ -13,7 +13,7 @@ namespace data_structures {
 		struct Node {
 			Node* prev = nullptr;
 			Node* next = nullptr;
-			T data ;
+			T data{};
 		};
 	public:
 		CircularDoubleLinkedList();

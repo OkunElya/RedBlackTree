@@ -120,10 +120,10 @@ namespace data_structures {
 				return;//recursion end
 			}
 
-			print(current->right, prefix + (isLeft ? "    " : "    "), false, level + 1);
+			print(current->right, prefix + (isLeft ? "       " : "       "), false, level + 1);
 
 			std::cout << prefix;
-			std::cout << (isLeft ? "    " : "    ");
+			std::cout << (isLeft ? "       " : "       ");
 
 			std::cout << "[" << ((current->color == red) ? "\x1b[31m" : "") << current->data << ((current->color == red) ? "\x1b[0m" : "");
 
@@ -136,7 +136,7 @@ namespace data_structures {
 			}*/
 			std::cout << "]" << std::endl;
 
-			print(current->left, prefix + (isLeft ? "    " : "    "), true, level + 1);
+			print(current->left, prefix + (isLeft ? "       " : "       "), true, level + 1);
 		}
 
 		template <typename dataPoint>
@@ -335,113 +335,101 @@ namespace data_structures {
 			return nullptr;
 		}
 
-		template <typename dataPoint>
-		bool RedBlackTree<dataPoint>::pop(dataPoint& value) {
-			if (!root) {
-				return false;//null root protection
-			}
+        template <typename dataPoint>
+        bool RedBlackTree<dataPoint>::pop(dataPoint& value) {
+            if (!root) {
+                return false; // null root protection
+            }
 
-			//find the node for deletion
-			struct node* temp = root;
-			while (temp) {
-				if (value > temp->data) {
-					if (!temp->right)//nullptrCheck
-						return false;
-					temp = temp->right;
-				}
-				else if (value < temp->data) {
-					if (!temp->left)//nullptrCheck
-						return false;
-					temp = temp->left;
-				}
-				else {
-					break;
-				}
-			}
+            // find the node for deletion
+            struct node* temp = root;
+            while (temp) {
+                if (value > temp->data) {
+                    if (!temp->right) // nullptrCheck
+                        return false;
+                    temp = temp->right;
+                } else if (value < temp->data) {
+                    if (!temp->left) // nullptrCheck
+                        return false;
+                    temp = temp->left;
+                } else {
+                    break;
+                }
+            }
 
-			node* deleted = temp;
-			if ((temp->left == nullptr) && (temp->right == nullptr)) {
-				//no children, node can de simply removed
-				//remove parent linkage
-				if (temp->parent) {
-					if (temp == temp->parent->left) {
-						temp->parent->left = nullptr;
-					}
-					else {
-						temp->parent->right = nullptr;
-					}
-					deleted = temp;
-				}
-				else//root moment
-				{
-					root = nullptr;
-					return true;//no tree => no balancing after deletion
-				}
-			}
-			else if ((temp->left != nullptr) && (temp->right != nullptr)) {
-				//node has both left and right children, so the algorithm has to find lowest on the right or biggest on the left
-				node* toReplace = temp->left;
-				while (toReplace->right != nullptr) {
-					toReplace = toReplace->right;
-				}//finding biggest node on the right
-				dataPoint delBuf = temp->data;//a buffer to swap removed value
-				temp->data = toReplace->data;
-				toReplace->data = delBuf;
-				//here because we take the node after traveling far left, it should only have one children or less  , if any then on the left.
+            node* deleted = temp;
+            if ((temp->left == nullptr) && (temp->right == nullptr)) {
+                // no children, node can be simply removed
+                // remove parent linkage
+                if (temp->parent) {
+                    if (temp == temp->parent->left) {
+                        temp->parent->left = nullptr;
+                    } else {
+                        temp->parent->right = nullptr;
+                    }
+                    deleted = temp;
+                } else // root moment
+                {
+                    root = nullptr;
+                    
+                }
+            } else if ((temp->left != nullptr) && (temp->right != nullptr)) {
+                // node has both left and right children, so the algorithm has to find lowest on the right or biggest on the left
+                node* toReplace = temp->left;
+                while (toReplace->right != nullptr) {
+                    toReplace = toReplace->right;
+                } // finding biggest node on the right
+                dataPoint* delBuf = new dataPoint;
+                *delBuf = temp->data;
+                temp->data = toReplace->data;
+                toReplace->data = *delBuf;
+                
 
-				if (toReplace->parent->left == toReplace) {//not sure about this if, but in case of 1 child on the right there might be no way to go to the right
-					toReplace->parent->left = toReplace->left;
-				}
-				else {
-					toReplace->parent->right = toReplace->left;
-				}
-				if (toReplace->left) {//if child on the left is present
-					toReplace->left->parent = toReplace->parent;
-					toReplace->left->color = toReplace->color;
-				}
-				//at this point toReplace node is unlinked
-				deleted = toReplace;
+                // here because we take the node after traveling far left, it should only have one child or less, if any then on the left.
+                if (toReplace->parent->left == toReplace) { // not sure about this if, but in case of 1 child on the right there might be no way to go to the right
+                    toReplace->parent->left = toReplace->left;
+                } else {
+                    toReplace->parent->right = toReplace->left;
+                }
+                if (toReplace->left) { // if child on the left is present
+                    toReplace->left->parent = toReplace->parent;
+                    toReplace->left->color = toReplace->color;
+                }
+                // at this point toReplace node is unlinked
+                deleted = toReplace;
 
-			}
-			else if (temp->left != nullptr) {//only left child is present
-				if (temp->parent) {//not the root node
-					if (temp->parent->left == temp) {
-						temp->parent->left = temp->left;//temp is on the left of the parent
-					}
-					else {
-						temp->parent->right = temp->left;//... right ...
-					}
+            } else if (temp->left != nullptr) { // only left child is present
+                if (temp->parent) { // not the root node
+                    if (temp->parent->left == temp) {
+                        temp->parent->left = temp->left; // temp is on the left of the parent
+                    } else {
+                        temp->parent->right = temp->left; // ... right ...
+                    }
+                } else {
+                    root = temp->left; // root had only one child and we removed root
+                }
+                temp->left->parent = temp->parent; //
+                deleted = temp;
+            } else { // only right child is present
+                if (temp->parent) { // not the root node
+                    if (temp->parent->left == temp) {
+                        temp->parent->left = temp->right; // temp is on the left of the parent
+                    } else {
+                        temp->parent->right = temp->right; // ... right ...
+                    }
+                } else {
+                    root = temp->right; // root had only one child and we removed root
+                }
+                temp->right->parent = temp->parent; //
+                deleted = temp;
+            }
 
-				}
-				else {
-					root = temp->left;//root had only one child and we removed root
-				}
-				temp->left->parent = temp->parent;//
-				deleted = temp;
-			}
-			else {//only right child is present
-				if (temp->parent) {//not the root node
-					if (temp->parent->left == temp) {
-						temp->parent->left = temp->right;//temp is on the left of the parent
-					}
-					else {
-						temp->parent->right = temp->right;//... right ...
-					}
-
-				}
-				else {
-					root = temp->right;//root had only one child and we removed root
-				}
-				temp->right->parent = temp->parent;//
-				deleted = temp;
-			}
-
-			//at this point we have the deleted node
-			RedBlackTree::deletionBalance(deleted);//the deleted node will always have the parent or else the balancing won't be done.
-			std::cout << "deleting node " << deleted->data << std::endl;
-			delete deleted;
-			return true;
-		}
+            // at this point we have the deleted node
+            RedBlackTree::deletionBalance(deleted); // the deleted node will always have the parent or else the balancing won't be done.
+			//std::cout << "deleting node " << deleted->data << std::endl;//debug
+            delete deleted;
+            return true;
+        }
 
 		template <typename dataPoint>
 		void RedBlackTree<dataPoint>::clear() {
