@@ -125,9 +125,9 @@ namespace data_structures {
 		}
 
 		CircularDoubleLinkedList<T>::Node* toRemove = head;
-
+	
 		if ((pos == 0) && (head != head->next)) {
-			head = toRemove->next;
+		head = toRemove->next;
 		}
 		else if (head == head->next)
 		{

@@ -209,7 +209,7 @@ namespace data_structures {
 		}
 
 		template <typename dataPoint>
-		dataPoint* RedBlackTree<dataPoint>::insert(dataPoint item) {
+		dataPoint* RedBlackTree<dataPoint>::insert(dataPoint &item) {
 			//first do simple binary tree insertion
 			node* toInsert = new node;
 			toInsert->data = item;
@@ -292,7 +292,7 @@ namespace data_structures {
 		}
 
 		template <typename dataPoint>
-		bool RedBlackTree<dataPoint>::find(dataPoint value) {
+		bool RedBlackTree<dataPoint>::find(dataPoint& value) {
 			struct node* temp = root;
 
 			while (temp) {
@@ -336,7 +336,7 @@ namespace data_structures {
 		}
 
 		template <typename dataPoint>
-		bool RedBlackTree<dataPoint>::pop(dataPoint value) {
+		bool RedBlackTree<dataPoint>::pop(dataPoint& value) {
 			if (!root) {
 				return false;//null root protection
 			}
@@ -436,8 +436,8 @@ namespace data_structures {
 			}
 
 			//at this point we have the deleted node
-			// NOT IMPLEMENTED YET
 			RedBlackTree::deletionBalance(deleted);//the deleted node will always have the parent or else the balancing won't be done.
+			std::cout << "deleting node " << deleted->data << std::endl;
 			delete deleted;
 			return true;
 		}

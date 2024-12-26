@@ -10,6 +10,7 @@
 struct phoneNumber {//in this case struct stores phoneNumber
 	unsigned int number = 0;
 	unsigned long int countryCode = 0;
+	data_structures::CircularDoubleLinkedList<int> list;//for storage of lines with repeated elements
 	inline bool operator==(const phoneNumber& other) const
 	{
 		return (this->countryCode == other.countryCode) && (this->number == other.number);
@@ -37,10 +38,16 @@ struct phoneNumber {//in this case struct stores phoneNumber
 		return !this->operator>(other);
 	}
 
-	data_structures::CircularDoubleLinkedList<int> list;//for storage of lines with repeated elements
-
 	std::string toString() {
-		return std::to_string(countryCode) + "-" + std::to_string(number)+"("+std::to_string(list.count()) + ")";
+		std::string output;
+		output= std::to_string(countryCode) + "-" + std::to_string(number)+"("+std::to_string(list.count()) + ") [";
+		auto temp = list.head;
+		do {
+			output= output + std::to_string( temp->data )+", ";
+			temp = temp->next;
+		} while (temp != list.head);
+		output = output+ "]";
+		return output;
 	}
 };
 
@@ -52,11 +59,9 @@ std::ostream& operator<<(std::ostream& os, phoneNumber& pn) {
 
 int main()
 {
-	
-
 	class taskTree : public data_structures::RedBlackTree<phoneNumber> {
 	public:
-		void taskInsert(phoneNumber key,unsigned long int lineNumber) {
+		void taskInsert(phoneNumber &key,unsigned long int lineNumber) {
 			phoneNumber* temp= nullptr;
 			temp = get(key);
 			if (!temp) {
@@ -67,12 +72,13 @@ int main()
 		
 		void taskRemove(phoneNumber key) {
 			if (get(key)) {
-				if (!key.list.isEmpty()) {
-					key.list.remove(key.number);//remove from list of repeated line numbers
-				}
-				else {
-					pop(key);//remove node from the tree
-				}
+				
+				key.list.remove(key.number);//remove from list of repeated line numbers
+				
+				if (key.list.isEmpty()) {
+					pop(key);
+				}//remove node from the tree
+				
 			}
 		}
 	};
@@ -98,11 +104,10 @@ int main()
 		}
 	}
 
-	//read file line by line
 	std::string line;
 	unsigned long int lineCounter = 0;
 	bool isCorrect = true;
-	while (std::getline(dataFile, line))
+	while (std::getline(dataFile, line))//read file line by line
 	{
 		phoneNumber key;
         std::regex numberPattern(R"(\d{3}-\d{7})");
@@ -129,9 +134,8 @@ int main()
 	}
 	dataFile.close();
 
-	//display tree
+	
 	tree.print();
 	
 	return 0;
-
 }

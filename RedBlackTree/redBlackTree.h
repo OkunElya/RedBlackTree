@@ -50,15 +50,17 @@ namespace data_structures {
 		void deletionBalance(node* temp); // Balances the tree after a node deletion
 
 	public:
-		RedBlackTree() requires isComparable<dataPoint>;
-		~RedBlackTree();
-		dataPoint* insert(dataPoint item); // Inserts a new node with the given data
+		RedBlackTree() requires isComparable<dataPoint>;//constructor
+		
+		~RedBlackTree();//destructor
+		
+		dataPoint* insert(dataPoint& item); // Inserts a new node with the given data
 
-		bool find(dataPoint value); // Finds a node with the given data and returns true if it exists
+		bool find(dataPoint& value); // Finds a node with the given data and returns true if it exists
 		
 		dataPoint* get(dataPoint& value); // Gets a node with the given data,returns true if value is overwritten
 
-		bool pop(dataPoint value); // Deletes a node with the given data
+		bool pop(dataPoint& value); // Deletes a node with the given data
 
 		void clear();//removes every node in the tree
 

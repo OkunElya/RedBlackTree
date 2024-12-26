@@ -13,7 +13,7 @@ namespace data_structures {
 		struct Node {
 			Node* prev = nullptr;
 			Node* next = nullptr;
-			T data = 0;
+			T data ;
 		};
 	public:
 		CircularDoubleLinkedList();
@@ -29,7 +29,6 @@ namespace data_structures {
 		unsigned long int count();//returns count of elements
 		unsigned long int find(T val);//searches for selected value and returns found count
 		bool isEmpty();//checks if list is empty
-	protected:
 		Node* head=nullptr;
 	};
 }
