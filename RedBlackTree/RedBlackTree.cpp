@@ -384,8 +384,9 @@ namespace data_structures {
 				while (toReplace->right != nullptr) {
 					toReplace = toReplace->right;
 				}//finding biggest node on the right
+				dataPoint delBuf = temp->data;//a buffer to swap removed value
 				temp->data = toReplace->data;
-
+				toReplace->data = delBuf;
 				//here because we take the node after traveling far left, it should only have one children or less  , if any then on the left.
 
 				if (toReplace->parent->left == toReplace) {//not sure about this if, but in case of 1 child on the right there might be no way to go to the right
