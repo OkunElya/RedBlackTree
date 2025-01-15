@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+#vscode and some build dirrectiories
+
+.vscode/
+.x64/
+RedBlackTree/x64/Debug/

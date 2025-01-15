@@ -1,7 +1,7 @@
 TARGET = main.exe
 CXX = clang++
 CXXFLAGS= -std=c++23 -Wall --debug
-SRC = main.cpp linkedList.cpp RedBlackTree.cpp 
+SRC = RedBlackTree/main.cpp RedBlackTree/linkedList.cpp RedBlackTree/RedBlackTree.cpp 
 OBJ=$(SRC:.cpp=.o)
 
 all: $(TARGET)

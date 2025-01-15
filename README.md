@@ -10,3 +10,4 @@ The implemented tree has
 
 coded by 
 *Kulesh-Aleksey*, Б9123-09.03.04
+also as a bonus it can use a linked list structure for duplicate storage (check out TaskTree class in the main)
