@@ -115,18 +115,22 @@ namespace data_structures {
 		}
 		
 		template <typename dataPoint>
-		void RedBlackTree<dataPoint>::print(node* current, std::string prefix , bool isLeft , int level){
+		void RedBlackTree<dataPoint>::print(node* current, std::ostream& outStream, bool useColors, std::string prefix , bool isLeft , int level){
 			if (!current) {
 				return;//recursion end
 			}
 
-			print(current->right, prefix + (isLeft ? "       " : "       "), false, level + 1);
+			print(current->right,outStream,useColors, prefix + (isLeft ? "       " : "       "), false, level + 1);
 
-			std::cout << prefix;
-			std::cout << (isLeft ? "       " : "       ");
+			outStream << prefix;
+			outStream << (isLeft ? "       " : "       ");
+			if (useColors) {
+				outStream << "[" << ((current->color == red) ? "\x1b[31m" : "") << current->data << ((current->color == red) ? "\x1b[0m" : "");
+			}
+			else {
+				outStream << "[" << ((current->color == red) ? "RED" : "") << current->data;
 
-			std::cout << "[" << ((current->color == red) ? "\x1b[31m" : "") << current->data << ((current->color == red) ? "\x1b[0m" : "");
-
+			}
 
 			/*if (current->parent) { was polluting the output
 				std::cout << ":" << current->parent->data;
@@ -134,9 +138,9 @@ namespace data_structures {
 			else {
 				std::cout << ":NPR";
 			}*/
-			std::cout << "]" << std::endl;
+			outStream << "]" << std::endl;
 
-			print(current->left, prefix + (isLeft ? "       " : "       "), true, level + 1);
+			print(current->left,outStream,useColors, prefix + (isLeft ? "       " : "       "), true, level + 1);
 		}
 
 		template <typename dataPoint>
@@ -439,8 +443,8 @@ namespace data_structures {
 		}
 
 		template <typename dataPoint>
-		void RedBlackTree<dataPoint>::print() {
-			this->print(root);//just a wrapper to make it public
+		void RedBlackTree<dataPoint>::print(std::ostream& outStream, bool useColors) {
+			this->print(root,outStream,useColors);//just a wrapper to make it public
 		}
 
 		template <typename dataPoint>

@@ -9,7 +9,7 @@
 #define RED_BLACK_TREE_CLASS_H
 
 template <typename T>
-concept isComparable = requires(T a, T b){// a concept to check if type is comparable
+concept isComparable = requires(T a, T b){ // a concept to check if type is comparable
 	{ a > b } -> std::same_as<bool>;
 	{ a < b } -> std::same_as<bool>;
 	{ a == b } -> std::same_as<bool>;
@@ -45,7 +45,7 @@ namespace data_structures {
 
 		void rotateRight(node* toRot); // Performs a right rotation on the given node
 
-		void print(node* current, std::string prefix = "", bool isLeft = false, int level = 0); // Prints the tree in a readable format
+		void print(node* current,std::ostream& outStream=std::cout, bool useColors = true, std::string prefix = "", bool isLeft = false, int level = 0); // Prints the tree in a readable format
 
 		void deletionBalance(node* temp); // Balances the tree after a node deletion
 
@@ -64,7 +64,7 @@ namespace data_structures {
 
 		void clear();//removes every node in the tree
 
-		void print(); // Prints the tree in a readable format
+		void print(std::ostream& outStream = std::cout,bool useColors=true); // Prints the tree in a readable format
 
 		bool isEmpty(); // Checks if the tree is empty
 	};

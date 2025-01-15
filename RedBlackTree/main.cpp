@@ -60,14 +60,14 @@ static std::ostream& operator<<(std::ostream& os, phoneNumber& pn) {
 //class for storing phone numbers in a tree
 class taskTree : public data_structures::RedBlackTree<phoneNumber> {
 private:
-	void inOrderWalk(node* temp) {
+	void inOrderWalk(node* temp,std::ostream& outStream) {
 		if (!temp)
 		{
 			return;
 		}
-		inOrderWalk(temp->left);
-		std::cout << temp->data << "\n";
-		inOrderWalk(temp->right);
+		inOrderWalk(temp->left,outStream);
+		outStream << temp->data << "\n";
+		inOrderWalk(temp->right,outStream);
 
 	}
 public:
@@ -96,8 +96,8 @@ public:
 	}
 	
 
-	void inOrderWalk() {
-		inOrderWalk(root);
+	void inOrderWalk(std::ostream& outStream= std::cout) {
+		inOrderWalk(root, outStream);
 	}
 };
 
@@ -113,7 +113,7 @@ int main()
 	while (true) {//load file 
 		std::cout << "Enter the file path: ";
 		std::getline(std::cin, filePath);
-		
+
 		std::cout << "\n";
 		std::cin.clear();
 		//check if file exists
@@ -146,6 +146,8 @@ int main()
 		}
 		lineCounter++;
 	}
+	dataFile.close();
+
 	if (!isCorrect) {
 		std::cout << "The file contains errors. Please correct them. every line should have a format of 123-1234567 \n";
 		exit(0);
@@ -153,11 +155,25 @@ int main()
 	else {
 		std::cout << "File loaded successfully ("<<lineCounter<<" lines)\n";
 	}
-	dataFile.close();
+
+	//writing out to the file in the same directory
+	std::ofstream outFile(filePath+".tree.txt");
+	if (outFile.is_open()) {
+		outFile << "Tree:\n";
+		tree.print(outFile,false);
+		outFile << "\n Inorder Walk:\n";
+		tree.inOrderWalk(outFile);
+		outFile.close();
+	}
+	else {
+		std::cerr << "Unable to open output file." << std::endl;
+	}
+
+
 	//the tree is now loaded with data
 	
 	tree.print();
-	tree.inOrderWalk();;
+	tree.inOrderWalk();
 	
 	return 0;
 }
